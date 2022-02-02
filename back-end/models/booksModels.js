@@ -1,9 +1,15 @@
 const connection = require("../config/config-db");
 
-const postBook = async () => {
+const postBook = async ({ ...body }, user_id) => {
   try {
-    const [results] = await connection.query();
-  } catch {}
+    const [{ insertId }] = await connection.query("INSERT INTO books SET ?", {
+      ...body,
+      user_id,
+    });
+    return { id: insertId, ...body };
+  } catch (err) {
+    throw Error;
+  }
 };
 
 const getBookById = async (id) => {
@@ -17,12 +23,16 @@ const getBookById = async (id) => {
   }
 };
 
-const getAllBooks = async (id) => {
+const getAllBooks = async (user_id) => {
+  let results;
+  let sql = "SELECT * FROM books ";
   try {
-    const [results] = await connection.query(
-      "SELECT * FROM books WHERE user_id=?",
-      [id]
-    );
+    if (admin) {
+      results = await connection.query(sql);
+    } else {
+      sql += "WHERE user_id=?;";
+      results = await connection.query(sql, [user_id]);
+    }
     return results[0];
   } catch (err) {
     throw Error;
