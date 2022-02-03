@@ -24,16 +24,12 @@ const getBookById = async (id) => {
 };
 
 const getAllBooks = async (user_id) => {
-  let results;
-  let sql = "SELECT * FROM books ";
   try {
-    if (admin) {
-      results = await connection.query(sql);
-    } else {
-      sql += "WHERE user_id=?;";
-      results = await connection.query(sql, [user_id]);
-    }
-    return results[0];
+    const [results] = await connection.query(
+      "SELECT * FROM books WHERE user_id=?",
+      [user_id]
+    );
+    return results;
   } catch (err) {
     throw Error;
   }

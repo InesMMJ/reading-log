@@ -16,13 +16,7 @@ const registerNewUser = async (req, res, next) => {
     const user = await userModel.getUserByEmail(req.body.email);
     if (user) throw new Error("EXISTING_EMAIL");
     await userModel.createNewUser(req.body);
-    res
-      .cookie("email", req.body.email, {
-        httpOnly: true,
-        maxAge: 10800000,
-      })
-      .status(201)
-      .send("User was registered successfully!");
+    res.status(201).send("User was registered successfully!");
   } catch (err) {
     next(err);
   }
